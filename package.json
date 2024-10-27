@@ -15,8 +15,11 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.5.4",
     "@expo/vector-icons": "^14.0.2",
-    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/stack": "^6.4.1",
+    "aws-amplify": "^6.6.7",
     "expo": "~51.0.28",
     "expo-constants": "~16.0.2",
     "expo-font": "~12.0.9",
