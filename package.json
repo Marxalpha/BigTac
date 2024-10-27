@@ -17,8 +17,11 @@
   "dependencies": {
     "@aws-amplify/auth": "^6.5.4",
     "@expo/vector-icons": "^14.0.2",
+    "@react-native-async-storage/async-storage": "^2.0.0",
+    "@react-native-community/netinfo": "^11.4.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
+    "amazon-cognito-identity-js": "^6.3.12",
     "aws-amplify": "^6.6.7",
     "expo": "~51.0.28",
     "expo-constants": "~16.0.2",

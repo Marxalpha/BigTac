@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-bigtac-dev-841e7-authRole",
+      "UnauthRoleArn": "arn:aws:iam::235494799847:role/amplify-bigtac-dev-841e7-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::235494799847:role/amplify-bigtac-dev-841e7-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-bigtac-dev-841e7-deployment",
+      "UnauthRoleName": "amplify-bigtac-dev-841e7-unauthRole",
+      "StackName": "amplify-bigtac-dev-841e7",
+      "StackId": "arn:aws:cloudformation:us-east-1:235494799847:stack/amplify-bigtac-dev-841e7/9614d260-9456-11ef-9d1d-1254bbeaf8f5",
+      "AmplifyAppId": "d1vgbssj59jt1k"
+    },
+    "categories": {
+      "function": {
+        "bigtacapi": {
+          "deploymentBucketName": "amplify-bigtac-dev-841e7-deployment",
+          "s3Key": "amplify-builds/bigtacapi-52636955636e66633655-build.zip"
+        }
+      },
+      "api": {
+        "api": {}
+      }
+    }
+  }
+}
