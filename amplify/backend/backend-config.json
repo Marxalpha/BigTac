@@ -1,44 +1,31 @@
 {
-  "api": {
-    "api": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "bigtacapi"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    }
-  },
-  "function": {
-    "bigtacapi": {
-      "build": true,
+  "auth": {
+    "BigTac": {
+      "customAuth": false,
       "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE"
+          ],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "NAME",
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
       "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  },
-  "parameters": {
-    "AMPLIFY_function_bigtacapi_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "bigtacapi"
-        }
-      ]
-    },
-    "AMPLIFY_function_bigtacapi_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "bigtacapi"
-        }
-      ]
+      "service": "Cognito"
     }
   }
 }

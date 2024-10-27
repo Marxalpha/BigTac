@@ -3,8 +3,10 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useLocalSearchParams } from "expo-router";
 
 export default function CreateOrJoinRoomScreen() {
+  const { username } = useLocalSearchParams();
   const handleCreateRoom = () => {
     console.log("Create Room button pressed");
     router.push({ pathname: "/Screens/CreateRoom" }); // Correct path for create-room
@@ -16,7 +18,9 @@ export default function CreateOrJoinRoomScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Create or Join a Room</ThemedText>
+      <ThemedText style={styles.title}>
+        {`Welcome Back!\n${username}`}
+      </ThemedText>
       <TouchableOpacity style={styles.button} onPress={handleCreateRoom}>
         <ThemedText style={styles.buttonText}>Create Room</ThemedText>
       </TouchableOpacity>
