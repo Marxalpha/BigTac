@@ -3,7 +3,7 @@ import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { signUp, signIn } from "@/app/services/aws/authService"; // import functions
+import { signUp, signIn } from "@/app/services/aws/authService";
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,10 +12,8 @@ export default function AuthScreen() {
 
   const handleAuth = async () => {
     if (isLogin) {
-      // Login
       await signIn(username, password);
     } else {
-      // Sign up
       await signUp(username, password);
     }
     router.push({ pathname: "/Screens/lobby" });
