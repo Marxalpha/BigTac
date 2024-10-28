@@ -44,12 +44,8 @@ export default function AuthScreen() {
 
   const validateInputs = () => {
     if (isLogin) {
-      if (!email || !password) {
+      if (!name || !password) {
         Alert.alert("Error", "Please fill in all fields");
-        return false;
-      }
-      if (!email.includes("@")) {
-        Alert.alert("Error", "Please enter a valid email address");
         return false;
       }
     } else {
