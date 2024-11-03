@@ -44,7 +44,7 @@ export default function AuthScreen() {
 
   const validateInputs = () => {
     if (isLogin) {
-      if (!name || !password) {
+      if (!email || !password) {
         Alert.alert("Error", "Please fill in all fields");
         return false;
       }
@@ -71,63 +71,39 @@ export default function AuthScreen() {
     setIsLoading(true);
     try {
       if (isLogin) {
-        console.log("Attempting sign in with:", { email, name });
-
-        router.push({ pathname: "/Screens/lobby", params: { username: name } });
-        // const signInResult = await signIn({   //not working for now
-        //   username: name,
+        router.push({
+          pathname: "/Screens/lobby",
+          params: { username: name },
+        });
+        // const { isSignedIn, nextStep } = await signIn({
+        //   username: email, // Use email as username for sign in
         //   password,
         // });
 
-        // console.log("Sign in result:", signInResult);
+        // console.log("Sign in result:", { isSignedIn, nextStep });
 
-        // if (signInResult.isSignedIn) {
+        // if (isSignedIn) {
         //   router.push("/Screens/lobby");
-        // } else if (signInResult.nextStep?.signInStep === "CONFIRM_SIGN_UP") {
-        //   // Handle unconfirmed signup
-        //   setShowConfirmation(true);
-        // } else {
-        //   Alert.alert(
-        //     "Sign In Failed",
-        //     "Please check your credentials and try again."
-        //   );
         // }
       } else {
-        const signUpResult = await signUp({
-          username: name, // Normalize email
+        const { isSignUpComplete, nextStep } = await signUp({
+          username: email, // Use email as username for sign up
           password,
           options: {
             userAttributes: {
-              email: email.toLowerCase().trim(),
+              email,
               name,
             },
-            autoSignIn: true, // Enable auto sign-in after confirmation
           },
         });
 
-        console.log("Sign up result:", signUpResult);
-
-        if (
-          !signUpResult.isSignUpComplete &&
-          signUpResult.nextStep?.signUpStep === "CONFIRM_SIGN_UP"
-        ) {
+        if (!isSignUpComplete && nextStep.signUpStep === "CONFIRM_SIGN_UP") {
           setShowConfirmation(true);
         }
       }
     } catch (error) {
       console.error("Auth error:", error);
-      const errorMessage = (error as Error).message;
-
-      // Handle specific error cases
-      if (errorMessage.includes("User not found")) {
-        Alert.alert("Error", "No account found with this email address");
-      } else if (errorMessage.includes("Incorrect username or password")) {
-        Alert.alert("Error", "Incorrect email or password");
-      } else if (errorMessage.includes("User is not confirmed")) {
-        setShowConfirmation(true);
-      } else {
-        Alert.alert("Error", errorMessage);
-      }
+      Alert.alert("Error", (error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -141,26 +117,15 @@ export default function AuthScreen() {
 
     setIsLoading(true);
     try {
-      const confirmResult = await confirmSignUp({
-        username: name,
+      const { isSignUpComplete } = await confirmSignUp({
+        username: email, // Use email as username for confirmation
         confirmationCode: confirmCode,
       });
 
-      console.log("Confirmation result:", confirmResult);
-
-      if (confirmResult.isSignUpComplete) {
-        const signInResult = await signIn({
-          username: name,
-          password,
-        });
-
-        if (signInResult.isSignedIn) {
-          router.push("/Screens/lobby");
-        } else {
-          setShowConfirmation(false);
-          setIsLogin(true);
-          Alert.alert("Success", "Account confirmed! Please sign in.");
-        }
+      if (isSignUpComplete) {
+        setShowConfirmation(false);
+        setIsLogin(true);
+        Alert.alert("Success", "Account created successfully! Please sign in.");
       }
     } catch (error) {
       console.error("Confirmation error:", error);
@@ -215,20 +180,21 @@ export default function AuthScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
           editable={!isLoading}
         />
+
         {!isLogin && (
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="Name"
             value={name}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
+            onChangeText={setName}
+            autoCapitalize="words"
             editable={!isLoading}
           />
         )}

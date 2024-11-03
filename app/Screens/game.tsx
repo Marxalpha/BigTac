@@ -10,24 +10,122 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useUltimateTicTacToe } from "@/hooks/useBigTac";
 import { BlurView } from "expo-blur";
 
 // Get screen width to calculate appropriate board size
 const screenWidth = Dimensions.get("window").width;
-const boardSize = Math.min(screenWidth / 3.5, 120); // Ensure boards aren't too large on big screens
+const boardSize = Math.min(screenWidth / 3.5, 120);
+
+// Game state types
+type Player = "X" | "O";
+type Cell = Player | null;
+type Board = Cell[];
+type GameState = {
+  boards: Board[];
+  mainBoard: Cell[];
+  currentPlayer: Player;
+  gameOver: boolean;
+  winner: Cell;
+};
 
 export default function GameScreen() {
   const { roomId } = useLocalSearchParams();
   const [messages, setMessages] = useState<{ id: string; text: string }[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const {
-    gameState,
-    makeMove,
-    getGameStatus,
-    isValidMove,
-  } = useUltimateTicTacToe();
+  // Initialize game state
+  const [gameState, setGameState] = useState<GameState>({
+    boards: Array(9).fill(Array(9).fill(null)),
+    mainBoard: Array(9).fill(null),
+    currentPlayer: "X",
+    gameOver: false,
+    winner: null,
+  });
+
+  // Check if a board has been won
+  const checkWinner = (board: Cell[]): Cell => {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    for (const [a, b, c] of lines) {
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return board[a];
+      }
+    }
+
+    return null;
+  };
+
+  // Check if a board is full
+  const isBoardFull = (board: Cell[]): boolean => {
+    return board.every((cell) => cell !== null);
+  };
+
+  // Make a move
+  const makeMove = (boardIndex: number, cellIndex: number) => {
+    if (gameState.gameOver || !isValidMove(boardIndex, cellIndex)) {
+      return;
+    }
+
+    // Create deep copy of the boards
+    const newBoards = gameState.boards.map((board) => [...board]);
+    const newMainBoard = [...gameState.mainBoard];
+
+    // Make the move
+    newBoards[boardIndex][cellIndex] = gameState.currentPlayer;
+
+    // Check if the current board was won
+    const boardWinner = checkWinner(newBoards[boardIndex]);
+    if (boardWinner) {
+      newMainBoard[boardIndex] = boardWinner;
+    } else if (isBoardFull(newBoards[boardIndex])) {
+      newMainBoard[boardIndex] = "draw";
+    }
+
+    // Check if the game was won
+    const gameWinner = checkWinner(newMainBoard);
+    const isGameFull = newMainBoard.every(
+      (board) => board !== null || board === "draw"
+    );
+
+    setGameState({
+      boards: newBoards,
+      mainBoard: newMainBoard,
+      currentPlayer: gameState.currentPlayer === "X" ? "O" : "X",
+      gameOver: gameWinner !== null || isGameFull,
+      winner: gameWinner,
+    });
+  };
+
+  // Check if a move is valid
+  const isValidMove = (boardIndex: number, cellIndex: number): boolean => {
+    // Move is valid if:
+    // 1. The cell is empty
+    // 2. The board hasn't been won yet
+    return (
+      !gameState.boards[boardIndex][cellIndex] &&
+      !gameState.mainBoard[boardIndex]
+    );
+  };
+
+  // Get game status message
+  const getGameStatus = (): string => {
+    if (gameState.winner) {
+      return `Player ${gameState.winner} wins!`;
+    }
+    if (gameState.gameOver) {
+      return "Game Over - It's a draw!";
+    }
+    return `Current Player: ${gameState.currentPlayer}`;
+  };
 
   const renderCell = (boardIndex: number, cellIndex: number) => {
     const value = gameState.boards[boardIndex][cellIndex];
@@ -200,6 +298,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     position: "relative",
     overflow: "hidden",
+    borderWidth: 2,
+    borderColor: "#000",
   },
   boardContent: {
     flex: 1,
@@ -214,37 +314,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#999",
   },
   cellBorderTop: {
-    borderTopWidth: 1,
-    borderTopColor: "#999",
+    borderTopWidth: 2,
+    borderTopColor: "#666",
   },
   cellBorderBottom: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#999",
+    borderBottomWidth: 2,
+    borderBottomColor: "#666",
   },
   cellBorderLeft: {
-    borderLeftWidth: 1,
-    borderLeftColor: "#999",
+    borderLeftWidth: 2,
+    borderLeftColor: "#666",
   },
   cellBorderRight: {
-    borderRightWidth: 1,
-    borderRightColor: "#999",
+    borderRightWidth: 2,
+    borderRightColor: "#666",
   },
   majorBorderTop: {
-    borderTopWidth: 2,
+    borderTopWidth: 3,
     borderTopColor: "#000",
   },
   majorBorderBottom: {
-    borderBottomWidth: 2,
+    borderBottomWidth: 3,
     borderBottomColor: "#000",
   },
   majorBorderLeft: {
-    borderLeftWidth: 2,
+    borderLeftWidth: 3,
     borderLeftColor: "#000",
   },
   majorBorderRight: {
-    borderRightWidth: 2,
+    borderRightWidth: 3,
     borderRightColor: "#000",
   },
   cellText: {
@@ -294,7 +396,7 @@ const styles = StyleSheet.create({
     color: "#4444ff",
   },
   playableCell: {
-    backgroundColor: "#e6ffe6",
+    backgroundColor: "#f0f0f0",
   },
   gameStatus: {
     fontSize: 18,
